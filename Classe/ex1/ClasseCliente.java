@@ -64,7 +64,12 @@ public class ClasseCliente {
 		
 	public void imprimirInfo() {
 		System.out.println("\n"+nome+" do sexo "+sexo+" tem  "+idade+
-				" e numero de telefone: "+telefone+" Mora no endereço :"+endereco);
-	}
+				" e numero de "+this.formatarTelefone()+" Mora no endereço :"+endereco);
 	
+	}
+	public String formatarTelefone() {
+		String telefoneString = Long.toString(this.telefone);
+		String teleoneFormatado = telefoneString.replaceFirst("(\\d{2})(\\d{1})(\\d{4})(\\d+)", "($1) $2 $3-$4");
+		return " Telefone: " + teleoneFormatado;
+	}
 }
