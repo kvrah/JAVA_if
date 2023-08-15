@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import conta.model.contaCorrente;
+import conta.controller.ContaController;
 import conta.model.ContaPoupanca;
 import conta.util.Cores;
 
@@ -14,21 +15,17 @@ public class Menu {
 
 	public static void main(String[] args) {
 
-		int opcao = 0;
+		ContaController contas = new ContaController();
+		int opcao,numero,agencia,tipo,aniversario;
+		String titular = null;
+		float saldo,limite;
 
-		contaCorrente cc1 = new contaCorrente(1, 123, 1, "Adriana", 10000.0f, 1000.0f);
-		cc1.visualizar();
-		cc1.sacar(12000.0f);
-		cc1.visualizar();
-		cc1.depositar(5000.0f);
-		cc1.visualizar();
-
-		ContaPoupanca cp1 = new ContaPoupanca(2, 123, 2, "Victor", 100000.0f, 15);
-		cp1.visualizar();
-		cp1.sacar(1000.0f);
-		cp1.visualizar();
-		cp1.depositar(5000.0f);
-		cp1.visualizar();
+		System.out.println("\nCriar Contas\n");
+		contaCorrente cc1 = new contaCorrente(contas.gerarNumero(), 123, 1, "Richard Campos", 2000f, 100.0f);
+		contaCorrente cc2 = new contaCorrente(contas.gerarNumero(), 125, 1, "Joao Gomes", 5000f, 100.0f);
+		ContaPoupanca cp1 = new ContaPoupanca(contas.gerarNumero(), 126 , 2, "Guilherme Rocha", 4000f, 12);
+		
+		contas.listarTodas();
 
 		while (true) {
 
@@ -70,26 +67,93 @@ public class Menu {
 			switch (opcao) {
 			case 1:
 				System.out.println("\n Criar Conta");
-
+				System.out.println("\n Digite o numero da Agência:");
+				agencia = leia.nextInt();
+				System.out.println("\n Digite o nome do Titular da Conta:");
+				leia.skip("\\R?");
+				titular = leia.nextLine();
+				
+				do {
+				System.out.println("\nDigite o tipo da conta: (1-CC ou 2-CP) :");
+				tipo = leia.nextInt();	
+				}while (tipo <1 && tipo>2);
+				
+				System.out.println("\n Digite o saldo da conyta: ");
+				saldo = leia.nextFloat();
+				
+				switch(tipo) {
+				case 1 -> {
+				System.out.println("\nDigite o limite de crédito (R$) :");
+				limite = leia.nextFloat();
+				contas.cadastrar(new contaCorrente(contas.gerarNumero(), agencia, tipo, titular, saldo, limite));
+				}
+				case 2 -> {
+				System.out.println("\n Digite o dia do aniversário da conta: ");
+				aniversario = leia.nextInt();
+				contas.cadastrar(new ContaPoupanca(contas.gerarNumero(), agencia, tipo, titular, saldo, aniversario));
+				}
+				}
+				
 				keyPress();
 				break;
 			case 2:
 				System.out.println("\n Listar todas as Contas");
-
+				contas.listarTodas();
 				keyPress();
 				break;
 			case 3:
 				System.out.println("\n Buscar Conta por número");
-
+				System.out.println("\n Digite o numero da conta: ");
+				numero = leia.nextInt();
+				
+				contas.procurarPorNumero(numero);
+		
 				keyPress();
 				break;
 			case 4:
 				System.out.println("\n Atualizar dados da Conta");
-
+				System.out.println("\n Digite o numero da conta:");
+				numero = leia.nextInt();
+				
+			if (contas.buscarNaCollection(numero) != null) {
+				System.out.println("\n Digite o numero da agencia: ");
+				agencia = leia.nextInt();
+				System.out.println("\nDigite o nome do titutal:");
+				leia.skip("\\R?");
+				
+			System.out.println("\n Digite o saldo da conta (R$)");
+			saldo = leia.nextFloat();
+			
+			tipo = contas.retornaTipo(numero);
+			
+			switch (tipo) {
+			case 1 -> {
+				System.out.println("\n Digite o limite de crédito (R$)");
+				limite = leia.nextFloat();
+				contas.atualizar(new contaCorrente(numero,agencia,tipo,titular,saldo,limite));
+			}
+			case 2 -> {
+				System.out.println("\nDigite o dia do aniversário da conta");
+				aniversario = leia.nextInt();
+				contas.atualizar(new ContaPoupanca(numero,agencia,tipo,titular,saldo,aniversario));
+			}
+			default -> {
+				System.out.println("\n Tipo de conta inválido");
+			}
+			}
+			
+			}else 
+				System.out.println("\n Conta não encontrada!");
+				
 				keyPress();
 				break;
 			case 5:
 				System.out.println("\n Apagar Conta");
+				
+				System.out.println("\n Digite o numero da conta");
+				numero = leia.nextInt();
+				
+				contas.deletar(numero);
 
 				keyPress();
 				break;
